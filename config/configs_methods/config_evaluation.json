@@ -11,7 +11,7 @@
     "iterations_to_skip": [],
     "biased": true,
     "tuning": false,
-    "num_iterations": 5,
+    "num_iterations": 10,
     "delta": 0.94,
     "t_already_tuned": false,
     "y_already_tuned": false,

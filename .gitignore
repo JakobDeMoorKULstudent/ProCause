@@ -1,3 +1,8 @@
+wandb/
+torch_two_sample.egg-info/
+src/utils/simbank_eval_18-02-old-policy-testing/
+.vscode/
+.eggs/
 data/*
 res/*
 res/SimBank/*

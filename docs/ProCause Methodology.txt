@@ -1,8 +1,0 @@
--- ProCause Methodology --
-
-- given matrix (?) of variables (columns) and order/timestamps (rows), let user define treatment assignment and/or outcome function
-- first, try the same as ProCause but with LSTM/transformer...
-	- adjust preprocessing (was saved already though)
-	- adjust mlp to lstm
-- end goal:
-	- generic for dimensions? (timing ok, but actions as well?)

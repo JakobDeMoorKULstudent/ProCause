@@ -6,8 +6,6 @@ parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(parent_dir)
 from config.config import path
 sys.path.append(path)
-# sys.path.append(path + "\\SimBank")
-# sys.path.append(path + "\\src\\methods\\BOZORGI")
 
 from src.utils.tools import save_data, load_data
 from copy import deepcopy
@@ -44,7 +42,7 @@ parser.add_argument('--already_preprocessed', type=lambda x: x.lower() == 'true'
 parser.add_argument('--iterations_to_skip', nargs='+', type=int, default=config_args.get('iterations_to_skip', []), help='Iterations to skip')
 parser.add_argument('--biased', type=lambda x: x.lower() == 'true', default=config_args.get('biased', True), help='Biased (True or False)')
 parser.add_argument('--tuning', type=lambda x: x.lower() == 'true', default=config_args.get('tuning', False), help='Tuning (True or False)')
-parser.add_argument('--num_iterations', type=int, default=config_args.get('num_iterations', 5), help='Num iterations')
+parser.add_argument('--num_iterations', type=int, default=config_args.get('num_iterations', 10), help='Num iterations')
 parser.add_argument('--delta', type=float, default=config_args.get('delta', 0.95), help='Delta')
 parser.add_argument('--t_already_tuned', type=lambda x: x.lower() == 'true', default=config_args.get('t_already_tuned', False), help='T already tuned (True or False)')
 parser.add_argument('--y_already_tuned', type=lambda x: x.lower() == 'true', default=config_args.get('y_already_tuned', False), help='Y already tuned (True or False)')
@@ -59,8 +57,6 @@ parser.add_argument('--get_dfs_policies_only', type=lambda x: x.lower() == 'true
 parser.add_argument('--fixed_policy_delta', type=float, default=config_args.get('fixed_policy_delta', None), help='Fixed policy delta')
 
 args = parser.parse_args()
-
-delta_values = [0.0, 0.5, 0.75, 0.9, 0.95]
 
 print(args)
 
@@ -141,7 +137,6 @@ if DATASET == "SimBank":
     MODEL_PARAMS["patience"] = 7500
     MODEL_PARAMS["grad_norm"] = 1.0
     MODEL_PARAMS["outcome_distribution"] = ["normal", "atoms"]
-    # MODEL_PARAMS["t_already_trained"] = args.t_already_trained
     MODEL_PARAMS["t_already_trained"] = False
     MODEL_PARAMS["loss_type"] = "separate"
     MODEL_PARAMS["causal_type"] = args.learners[0]
@@ -165,7 +160,6 @@ if DATASET == "SimBank":
                                         {"name": "TarNet_Vanilla_NN", "causal_type": "TarNet", "model_type": "Vanilla_NN"},
                                         {"name": "T-Learner_Vanilla_NN", "causal_type": "T-Learner", "model_type": "Vanilla_NN"}],
                             "nr_cases": 1000, "nr_samples_per_case": 50, "num_iterations": 5}
-                            # "nr_cases": 10000, "nr_samples_per_case": 1, "num_iterations": 5}
         
     else:
         EVALUATOR_PARAMS = {"policies": [], "nr_cases": 1000, "nr_samples_per_case": 50, "num_iterations": 5}
@@ -211,7 +205,6 @@ elif DATASET == "bpic2012":
     DATASET_PARAMS["nr_of_interventions"] = 1
     DATASET_PARAMS["action_width"] = [2]
     DATASET_PARAMS["action_depth"] = ["max length of trace"]
-    # pd.read_csv("C:\\Users\\u0166838\\OneDrive - KU Leuven\\Documents\\Doc\\Code\\ProCause\\data\\BPIC\\bpic2012_final.csv", sep=";")
     data = pd.read_csv(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "bpic2012_final.csv"), sep=";")
 
     MODEL_PARAMS["t"] = {"lr": 0.0001, "batch_size": 1024, "n_dense_t": 4, "dim_hidden": 25, "dim_t": 1 if DATASET_PARAMS["action_width"][0] == 2 else DATASET_PARAMS["action_width"][0], 
@@ -221,7 +214,6 @@ elif DATASET == "bpic2012":
     MODEL_PARAMS["patience"] = 7500
     MODEL_PARAMS["grad_norm"] = 1.0
     MODEL_PARAMS["outcome_distribution"] = ["normal", "atoms"]
-    # MODEL_PARAMS["t_already_trained"] = args.t_already_trained
     MODEL_PARAMS["t_already_trained"] = False
     MODEL_PARAMS["loss_type"] = "separate"
     MODEL_PARAMS["causal_type"] = args.learners[0]
@@ -243,16 +235,13 @@ elif DATASET == "bpic2017":
     DATASET_PARAMS["intervention_name"] = "sent_2_offers"
     DATASET_PARAMS["case_nr_column"] = "case_nr"
     DATASET_PARAMS["order_column"] = "timestamp"
-    # DATASET_PARAMS["event_cols"] = ["activity", "resource", "elapsed_time", "action", "eventorigin", "lifecycle:transition"]
     DATASET_PARAMS["event_cols"] = ["activity", "resource", "elapsed_time", "action"]
     DATASET_PARAMS["case_cols"] = ["case:requestedamount", "case:loangoal", "case:applicationtype"]
     DATASET_PARAMS["scale_cols"] = ["case:requestedamount", "elapsed_time", "firstwithdrawalamount", "monthlycost", "creditscore", "offeredamount", "numberofterms"]
-    # DATASET_PARAMS["cat_cols"] = ["activity", "resource", "action", "eventorigin", "lifecycle:transition", "case:loangoal", "case:applicationtype"]
     DATASET_PARAMS["cat_cols"] = ["activity", "resource", "action", "case:loangoal", "case:applicationtype"]
     DATASET_PARAMS["nr_of_interventions"] = 1
     DATASET_PARAMS["action_width"] = [2]
     DATASET_PARAMS["action_depth"] = ["max length of trace"]
-    # pd.read_csv("C:\\Users\\u0166838\\OneDrive - KU Leuven\\Documents\\Doc\\Code\\ProCause\\data\\BPIC\\bpic2012_final.csv", sep=";")
     data = pd.read_csv(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "bpic2017_final.csv"), sep=";")
 
     MODEL_PARAMS["t"] = {"lr": 0.0001, "batch_size": 1024, "n_dense_t": 4, "dim_hidden": 25, "dim_t": 1 if DATASET_PARAMS["action_width"][0] == 2 else DATASET_PARAMS["action_width"][0], 
@@ -262,7 +251,6 @@ elif DATASET == "bpic2017":
     MODEL_PARAMS["patience"] = 7500
     MODEL_PARAMS["grad_norm"] = 1.0
     MODEL_PARAMS["outcome_distribution"] = ["normal", "atoms"]
-    # MODEL_PARAMS["t_already_trained"] = args.t_already_trained
     MODEL_PARAMS["t_already_trained"] = False
     MODEL_PARAMS["loss_type"] = "separate"
     MODEL_PARAMS["causal_type"] = args.learners[0]
@@ -273,14 +261,7 @@ elif DATASET == "bpic2017":
     PREP_PARAMS["calc_atoms"] = False
     PREP_PARAMS["group_size_atoms"] = 0
     PREP_PARAMS["filter_useless_cols"] = True
-    # NOTE: To Add: ['firstwithdrawalamount', 'monthlycost', 'creditscore', 'offeredamount'] to scale_cols and case_cols OR event_cols (they change, but only for per each created offer)
     PREP_PARAMS["last_state_cols"] = ["elapsed_time", "outcome", "case:loangoal", "case:applicationtype", "firstwithdrawalamount", "monthlycost", "creditscore", "offeredamount", "numberofterms"]
-
-# if DATASET == "SimBank":
-#     # get case_nr until the train_size
-#     case_nrs = data[DATASET_PARAMS["case_nr_column"]].unique()
-#     case_nrs = case_nrs[:DATASET_PARAMS["train_size"]]
-#     data = data[data[DATASET_PARAMS["case_nr_column"]].isin(case_nrs)]
 
 if not args.big_data:
     data = data.head(5000)
@@ -469,7 +450,6 @@ else:
                     print('\nTESTING for Iteration', iteration, 'Intervention', intervention, "\n")
 
                     if DATASET == "SimBank":
-                        # prep_utils_per_delta_per_model_type = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "prep_utils_per_delta_per_model_type" + str(DATASET_PARAMS["intervention_name"]) + str(delta_values) + "_CE"))
                         model_params_estimator = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "MODEL_PARAMS_GENERAL_" + str(DATASET_PARAMS["intervention_name"]) + "_CE"))
                         prep_params_estimator = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "PREP_PARAMS_GENERAL_" + str(DATASET_PARAMS["intervention_name"]) + "_CE"))
                         # check first whether file exists, otherwise, grap them as above
@@ -477,6 +457,8 @@ else:
                             prep_utils_LSTM = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "prep_utils_" + str(DATASET_PARAMS["intervention_name"]) + str(delta) + "_LSTM" + "_CE"))
                             prep_utils_Vanilla_NN = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "prep_utils_" + str(DATASET_PARAMS["intervention_name"]) + str(delta) + "_Vanilla_NN" + "_CE"))
                         else:
+                            # These are not the actual delta_values, is just the name of the file
+                            delta_values = [0.0, 0.5, 0.75, 0.9, 0.95]
                             prep_utils_per_delta_per_model_type = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "prep_utils_per_delta_per_model_type" + str(DATASET_PARAMS["intervention_name"]) + str(delta_values) + "_CE"))
                             prep_utils_LSTM = prep_utils_per_delta_per_model_type[delta]["LSTM"]
                             prep_utils_Vanilla_NN = prep_utils_per_delta_per_model_type[delta]["Vanilla_NN"]
@@ -572,10 +554,6 @@ if args.testing and 'bpic' in DATASET:
     y_est_ensemble = torch.stack(y_est_samples_ensemble_all, dim=0).mode(dim=0).values
     print("y_est_ensemble.shape", y_est_ensemble.shape)
 
-    # uni_metrics_test, _, _ = procause_generator.evaluate_statistical(y_model=y_est_ensemble, t_model=t_est_samples_all, only_univariate=True)
-    # if args.big_data:
-    #     save_data(uni_metrics_test, os.path.join(os.getcwd(), RESULTS_FOLDER, DATASET, "uni_metrics_test_ensemble_all_" + str(DATASET_PARAMS["intervention_name"]) + BIAS_PATH + args.just_take_best_STRING))
-    
     uni_metrics_test, multi_metrics_test_no_x, multi_metrics_test = realcause_generator.evaluate_statistical(y_model=y_est_ensemble, t_model=t_est_samples_all)
     if args.big_data:
         save_data(uni_metrics_test, os.path.join(os.getcwd(), RESULTS_FOLDER, DATASET, "uni_metrics_test_ensemble_all_" + str(DATASET_PARAMS["intervention_name"]) + BIAS_PATH + args.just_take_best_STRING + "RealCause"))

@@ -6,8 +6,6 @@ parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(parent_dir)
 from config.config import path
 sys.path.append(path)
-# sys.path.append(path + "\\SimBank")
-# sys.path.append(path + "\\src\\methods\\BOZORGI")
 
 from src.utils.tools import save_data, load_data
 from copy import deepcopy
@@ -35,22 +33,15 @@ print(args)
 
 # BIG_DATA = False
 BIG_DATA = True
-# ALREADY_PREPROCESSED = False
 ALREADY_PREPROCESSED = args.already_preprocessed
 NUM_ITERATIONS = 5
 ITERATIONS_TO_SKIP = []
 
 # Say which causal estimators to run
-# ESTIMATORS = ["TarNet", "S-Learner", "T-Learner"]
 MODEL_TYPES = ["LSTM", "Vanilla_NN"]
 ESTIMATORS = ["TarNet", "S-Learner", "T-Learner"]
-# MODEL_TYPES = ["Vanilla_NN"]
-# delta_values = [0.0, 0.5, 0.75, 0.9, 0.95]
-# delta_values = [0.8, 0.85, 0.91, 0.92, 0.93, 0.94, 0.96, 0.97, 0.98, 0.99, 0.999]
-delta_values = [0.0, 0.5, 0.75, 0.8, 0.85, 0.9, 0.91, 0.92, 0.93, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99, 0.999]
-# NR_THRESHOLDS = 10
+delta_values = [0.75, 0.8, 0.85, 0.9, 0.95, 0.999]
 NR_THRESHOLDS = 20
-# delta_values = [0.95]
 
 # Say which dataset (and whether threshold tuning is needed)
 DATASET = "SimBank"
@@ -61,7 +52,6 @@ MODEL_PARAMS = {"early_stop": True, "eval_every": 500, "num_epochs": 100000, "ma
 
 if DATASET == "SimBank":
     DATASET_PARAMS["intervention_name"] = args.intervention_name
-    # DATASET_PARAMS["intervention_name"] = ["time_contact_HQ"]
     dataset_params_simbank = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "loan_log_" + str(DATASET_PARAMS["intervention_name"]) + "_" + str(100000) + "_dataset_params"))
     DATASET_PARAMS.update(dataset_params_simbank)
     DATASET_PARAMS["train_size"] = 2500
@@ -108,14 +98,9 @@ if not BIG_DATA:
     MODEL_PARAMS["lr"] = 0.001
     MODEL_PARAMS["print_every_iters"] = 10
     MODEL_PARAMS["eval_every"] = 10
-# save MODEL_PARAMS and PREP_PARAMS
+
 save_data(MODEL_PARAMS, os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "MODEL_PARAMS_GENERAL_" + str(DATASET_PARAMS["intervention_name"]) + "_CE"))
 save_data(PREP_PARAMS, os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "PREP_PARAMS_GENERAL_" + str(DATASET_PARAMS["intervention_name"]) + "_CE"))
-# MODEL_PARAMS["num_epochs"] = 10
-# MODEL_PARAMS["patience"] = 10
-# MODEL_PARAMS["lr"] = 0.001
-# MODEL_PARAMS["print_every_iters"] = 10
-# MODEL_PARAMS["eval_every"] = 10
 
 data_train_prep_per_delta_per_model_type = {}
 data_val_prep_per_delta_per_model_type = {}
@@ -137,7 +122,6 @@ if not ALREADY_PREPROCESSED:
 
         if not BIG_DATA:
             data = data.head(10000)
-        # data = data.head(10000)
 
         data_train_prep_per_delta_per_model_type[delta] = {}
         data_val_prep_per_delta_per_model_type[delta] = {}
@@ -190,12 +174,6 @@ if not ALREADY_PREPROCESSED:
                 save_data(data_val_prep, os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "data_val_prep_" + str(DATASET_PARAMS["intervention_name"]) + str(delta) + "_" + model_type + "_CE"))
                 save_data(data_val_th_prep, os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "data_val_th_prep_" + str(DATASET_PARAMS["intervention_name"]) + str(delta) + "_" + model_type + "_CE"))
                 save_data(prep_utils, os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "prep_utils_" + str(DATASET_PARAMS["intervention_name"]) + str(delta) + "_" + model_type + "_CE"))
-
-        # save_data(data_train_prep_per_delta_per_model_type, os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "data_train_prep_per_delta_per_model_type_" + str(DATASET_PARAMS["intervention_name"]) + str(delta_values) + "_CE"))
-        # save_data(data_val_prep_per_delta_per_model_type, os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "data_val_prep_per_delta_per_model_type" + str(DATASET_PARAMS["intervention_name"]) + str(delta_values) + "_CE"))
-        # save_data(data_val_th_prep_per_delta_per_model_type, os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "data_val_th_prep_per_delta_per_model_type" + str(DATASET_PARAMS["intervention_name"]) + str(delta_values) + "_CE"))
-        # save_data(prep_utils_per_delta_per_model_type, os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "prep_utils_per_delta_per_model_type" + str(DATASET_PARAMS["intervention_name"]) + str(delta_values) + "_CE"))
-
 else:
     # load per delta and model type
     for delta in delta_values:
@@ -208,11 +186,6 @@ else:
             data_val_prep_per_delta_per_model_type[delta][model_type] = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "data_val_prep_" + str(DATASET_PARAMS["intervention_name"]) + str(delta) + "_" + model_type + "_CE"))
             data_val_th_prep_per_delta_per_model_type[delta][model_type] = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "data_val_th_prep_" + str(DATASET_PARAMS["intervention_name"]) + str(delta) + "_" + model_type + "_CE"))
             prep_utils_per_delta_per_model_type[delta][model_type] = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "prep_utils_" + str(DATASET_PARAMS["intervention_name"]) + str(delta) + "_" + model_type + "_CE"))
-
-    # data_train_prep_per_delta_per_model_type = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "data_train_prep_per_delta_per_model_type_" + str(DATASET_PARAMS["intervention_name"]) + str(delta_values) + "_CE"))
-    # data_val_prep_per_delta_per_model_type = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "data_val_prep_per_delta_per_model_type" + str(DATASET_PARAMS["intervention_name"]) + str(delta_values) + "_CE"))
-    # data_val_th_prep_per_delta_per_model_type = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "data_val_th_prep_per_delta_per_model_type" + str(DATASET_PARAMS["intervention_name"]) + str(delta_values) + "_CE"))
-    # prep_utils_per_delta_per_model_type = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "prep_utils_per_delta_per_model_type" + str(DATASET_PARAMS["intervention_name"]) + str(delta_values) + "_CE"))
 
 for int in range(DATASET_PARAMS["nr_of_interventions"]):
     for delta in delta_values:
