@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: torch-two-sample
+Version: 0.1
+Summary: A PyTorch library for (differentiable) two sample tests
+Author: Josip Djolonga
+Author-email: josipd@inf.ethz.ch
+License: license.txt
+Requires-Dist: torch
+Requires-Dist: numpy
+Requires-Dist: scipy
