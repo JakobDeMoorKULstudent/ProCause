@@ -6,14 +6,28 @@ The structure of the code is as follows:
 ProCause/
 |_ config/                          
 |_ data/                            # Data generated (SimBank) and used (BPIC12/17) in experiments
+|_ Seq/                             # Evaluator using Sequential Models
+    |_ distributions/                   # Code for the assumed distributions of the Y and T variables
+    |_ base.py                          # Base class for the generator/evaluator, including sample functions and statistical tests
+    |_ models.py                        # Base models (e.g., LSTM) used for the causal learner architectures
+    |_ seq_generator.py                 # Main generator/evaluator file for training, validation
+    |_ s_learner.py                     # S-learner setup and forward functions
+    |_ t_learner.py                     # T-learner setup and forward functions
+    |_ tarnet.py                        # TARNet setup and forward functions
+    |_ utils.py                         # utils only for the evaluator
 |_ NonSeq/                          # Evaluator using Non-Sequential Models
 |_ res/                             # Results of the experiments
-    |_ res_main.ipynb                   # Calculate the Ensemble, collect the results
+    |_ res_main.ipynb                   # Calculate the Ensemble outputs, collect the results
+    |_ res_utils.py                     # Utils for Calculating the Ensemble outputs and collecting the results
+    |_ SimBank                          # Results for the SimBank simulation
+    |_ bpic2012                         # Results for the BPIC12 dataset
+    |_ bpic2017                         # Results for the BPIC17 dataset
+    |_ all_rankings                     # All resulting rankings of the evaluated PresPM methods, originating from the true ranking, and from each learner/model setup (for each iteration)
+    |_ figures                          # Figures of the results
 |_ scripts/
     |_ CausalEstimators_run.py          # Train the PresPM methods (based on causal estimators) to evaluate with ProCause(/RealCause)
     |_ NonSeq_run.py                    # Tune, Train & Evaluate the PresPM methods using non-sequential models
     |_ Seq_run.py                       # Tune, Train & Evaluate the PresPM methods using sequential models
-|_ NonSeq/                          # Evaluator using Sequential Models
 |_ SimBank/                         # The full SimBank simulator
 |_ src/        
     |_ causal_estimators/               # Code for the PresPM methods to evaluate    
