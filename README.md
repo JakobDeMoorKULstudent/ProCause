@@ -57,4 +57,4 @@ Now, the results from the paper can be reproduced by setting the ```path``` vari
 python scripts/Seq_run.py --config config/configs_methods/config_run_all.json --dataset SimBank --intervention_name time_contact_HQ --learners TarNet S-Learner T-Learner --delta 0.95 --policies all
 ```
 
-Download the results of the experiments from [OneDrive](https://kuleuven-my.sharepoint.com/:f:/g/personal/jakob_demoor_kuleuven_be/Es2BSf9z7mZNuCP3Z3wS84sBdvlSpgp81gM3-OOA3iDQvg?e=p5O22r). 
+Download the results of the experiments from [Google Drive/res](https://drive.google.com/drive/folders/1jh0M3iGL_zMG9RCPYZEXcyGICHPqbOv4?usp=sharing). 
