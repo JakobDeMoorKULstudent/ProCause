@@ -45,7 +45,7 @@ The ```requirements_all_code.txt``` file provides the necessary packages for Pro
 All code was written for ```python 3.11.5```.
 
 ## Experiments of the paper
-Download the SimBank data for the experiments from [OneDrive](https://kuleuven-my.sharepoint.com/:f:/g/personal/jakob_demoor_kuleuven_be/Eka6L_hsm2JJvY-JE7vTHhcBytKdAJi5-D6pan229LJy-Q?e=I6Mthf). 
+Download the SimBank data for the experiments from [Google Drive/data](https://drive.google.com/drive/folders/1ebzSVZku52xA1utllNVdkYcETxPW93c4?usp=sharing). 
 
 BPIC12 & 17 can be downloaded from https://data.4tu.nl/articles/dataset/BPI_Challenge_2012/12689204 and https://data.4tu.nl/articles/dataset/BPI_Challenge_2017/12696884 respectively. Afterwards, these datasets should be cleaned using ProCause/src/utils/preprocessor/bpic_cleaning.ipynb.
 
