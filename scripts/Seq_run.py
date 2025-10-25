@@ -172,6 +172,8 @@ if DATASET == "SimBank":
                 # for the causal_type grab the first part of the policy name, and for the model_type grab the second part of the policy name
                 causal_type = policy.split("_")[0]
                 model_type = policy.split("_")[1]
+                if model_type == "Vanilla":
+                    model_type = "Vanilla_NN"
                 EVALUATOR_PARAMS["policies"].append({"name": policy, "causal_type": causal_type, "model_type": model_type})
     
     if not args.big_eval:

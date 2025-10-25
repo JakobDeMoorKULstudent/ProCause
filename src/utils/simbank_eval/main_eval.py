@@ -3,6 +3,7 @@ from src.utils.simbank_eval.policies_to_eval import get_bank_best_action, get_ra
 import src.utils.preprocessor.simbank_prep as simbank_prep
 from SimBank import simulation
 import pandas as pd
+import numpy as np
 import random
 import torch
 from scipy import stats
@@ -69,7 +70,8 @@ class SimBankEvaluator():
         
         # NOTE: to change 
         
-
+        if self.get_dfs_policies_only:
+            return {}, {}
 
         # prep_agg_offline_full_dict, prep_seq_offline_full_dict = self.prep_offline_full_dfs(offline_full_dfs)
 
@@ -80,9 +82,6 @@ class SimBankEvaluator():
             if "ProCause" in self.generator_classes.keys():
                 save_data(prep_seq_offline_full_dict, os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "prep_seq_offline_full_dict_" + str(self.DATASET_PARAMS["intervention_name"]) + str(self.delta_policy) + "_generator_iteration" + str(0) + "ProCause" + str(self.policy_names) + str(self.evaluation_type_suffix)))
 
-        if self.get_dfs_policies_only:
-            return {}, {}
-        
         # NOTE: to change again
 
         # estimated_outcome_dfs_realcause, estimated_outcome_dfs_procause = self.get_estimated_outcomes(prep_agg_offline_full_dict, prep_seq_offline_full_dict, offline_actions_dfs)
@@ -93,6 +92,14 @@ class SimBankEvaluator():
                 save_data(estimated_outcome_dfs_realcause, os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "estimated_outcome_dfs_realcause_" + str(self.DATASET_PARAMS["intervention_name"]) + str(self.delta_evaluator) + "_generator_iteration" + str(self.generator_iteration) + "RealCause" + str(self.generator_classes["RealCause"].MODEL_PARAMS["causal_type"] + str(self.policy_names) + str(self.evaluation_type_suffix) + self.fixed_policy_delta_to_add)))
             if "ProCause" in self.generator_classes.keys():
                 save_data(estimated_outcome_dfs_procause, os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "estimated_outcome_dfs_procause_" + str(self.DATASET_PARAMS["intervention_name"]) + str(self.delta_evaluator) + "_generator_iteration" + str(self.generator_iteration) + "ProCause" + str(self.generator_classes["ProCause"].MODEL_PARAMS["causal_type"] + str(self.policy_names) + str(self.evaluation_type_suffix) + self.fixed_policy_delta_to_add)))
+
+        # # TO DELETE: just quickly load the estimated outcomes
+        # estimated_outcome_dfs_realcause, estimated_outcome_dfs_procause = {}, {}
+        # if self.BIG_EVAL:
+        #     if "RealCause" in self.generator_classes.keys():
+        #         estimated_outcome_dfs_realcause = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "estimated_outcome_dfs_realcause_" + str(self.DATASET_PARAMS["intervention_name"]) + str(self.delta_evaluator) + "_generator_iteration" + str(self.generator_iteration) + "RealCause" + str(self.generator_classes["RealCause"].MODEL_PARAMS["causal_type"] + str(self.policy_names) + str(self.evaluation_type_suffix) + self.fixed_policy_delta_to_add)))
+        #     if "ProCause" in self.generator_classes.keys():
+        #         estimated_outcome_dfs_procause = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "estimated_outcome_dfs_procause_" + str(self.DATASET_PARAMS["intervention_name"]) + str(self.delta_evaluator) + "_generator_iteration" + str(self.generator_iteration) + "ProCause" + str(self.generator_classes["ProCause"].MODEL_PARAMS["causal_type"] + str(self.policy_names) + str(self.evaluation_type_suffix) + self.fixed_policy_delta_to_add)))
 
         wssd_dict_realcause, wssd_dict_procause = self.get_wssds(online_outcome_dfs, estimated_outcome_dfs_realcause, estimated_outcome_dfs_procause)
         if self.BIG_EVAL:
@@ -121,7 +128,13 @@ class SimBankEvaluator():
 
         # _, _, _, self.bank_online_full_df, self.bank_online_action_df = self.policy_online(self.EVALUATOR_PARAMS["nr_cases"], {"name": "bank"})
         
-        # check if the file already exists, if not save it, otherwise load it
+        # NOTE: we don't calculate bank anymore due to it not depending on confounding
+        # self.bank_test_df = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "bank_test_df_" + str(self.DATASET_PARAMS["intervention_name"]) + "0.95" + "_generator_iteration" + str(0) + self.suffix + str(self.evaluation_type_suffix)))
+        # self.bank_performance = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "online_performances_" + str(self.DATASET_PARAMS["intervention_name"]) + "0.95" + "_generator_iteration" + str(0) + self.suffix + "bank" + str(self.evaluation_type_suffix)))
+        # self.bank_outcome_df = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "online_outcome_dfs_" + str(self.DATASET_PARAMS["intervention_name"]) + "0.95" + "_generator_iteration" + str(0) + self.suffix + "bank" + str(self.evaluation_type_suffix)))
+        # self.bank_online_full_df = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "online_full_dfs_" + str(self.DATASET_PARAMS["intervention_name"]) + "0.95" + "_generator_iteration" + str(0) + self.suffix + "bank" + str(self.evaluation_type_suffix)))
+        # self.bank_online_action_df = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "online_actions_dfs_" + str(self.DATASET_PARAMS["intervention_name"]) + "0.95" + "_generator_iteration" + str(0) + self.suffix + "bank" + str(self.evaluation_type_suffix)))
+
         if self.BIG_EVAL and os.path.exists(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "bank_test_df_" + str(self.DATASET_PARAMS["intervention_name"]) + "0.95" + "_generator_iteration" + str(0) + self.suffix + str(self.evaluation_type_suffix))) and not self.get_dfs_policies:
                 self.bank_test_df = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "bank_test_df_" + str(self.DATASET_PARAMS["intervention_name"]) + "0.95" + "_generator_iteration" + str(0) + self.suffix + str(self.evaluation_type_suffix)))
                 self.bank_performance = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "online_performances_" + str(self.DATASET_PARAMS["intervention_name"]) + "0.95" + "_generator_iteration" + str(0) + self.suffix + "bank" + str(self.evaluation_type_suffix)))
@@ -141,8 +154,7 @@ class SimBankEvaluator():
 
         # save the bank
 
-        # NOTE: to change again
-
+        # NOTE: we don't calculate bank anymore due to it not depending on confounding
         if self.BIG_EVAL:
             save_data(self.online_performances["bank"], os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "online_performances_" + str(self.DATASET_PARAMS["intervention_name"]) + "0.95" + "_generator_iteration" + str(0) + self.suffix + "bank" + str(self.evaluation_type_suffix)))
             save_data(self.online_outcome_dfs["bank"], os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "online_outcome_dfs_" + str(self.DATASET_PARAMS["intervention_name"]) + "0.95" + "_generator_iteration" + str(0) + self.suffix + "bank" + str(self.evaluation_type_suffix)))
@@ -161,6 +173,16 @@ class SimBankEvaluator():
             # to get the offline dfs, the random policy is not influenced by the delta (confounding)
             if policy["name"] == "random":
                 delta = 0.95
+                # # NOTE: we don't calculate random anymore due to it not depending on confounding
+                # self.online_performances[policy["name"]] = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "online_performances_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_generator_iteration" + str(0) + self.suffix + str(policy["name"]) + str(self.evaluation_type_suffix)))
+                # self.online_outcome_dfs[policy["name"]] = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "online_outcome_dfs_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_generator_iteration" + str(0) + self.suffix + str(policy["name"]) + str(self.evaluation_type_suffix)))
+                # self.online_full_dfs[policy["name"]] = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "online_full_dfs_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_generator_iteration" + str(0) + self.suffix + str(policy["name"]) + str(self.evaluation_type_suffix)))
+                # self.online_actions_dfs[policy["name"]] = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "online_actions_dfs_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_generator_iteration" + str(0) + self.suffix + str(policy["name"]) + str(self.evaluation_type_suffix)))
+
+                # self.offline_full_dfs[policy["name"]] = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "offline_full_dfs_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_generator_iteration" + str(0) + self.suffix + str(policy["name"]) + str(self.evaluation_type_suffix)))
+                # self.offline_actions_dfs[policy["name"]] = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "offline_actions_dfs_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_generator_iteration" + str(0) + self.suffix + str(policy["name"]) + str(self.evaluation_type_suffix)))
+                # continue
+
             # check if the file already exists (which is saved later on)
             if self.BIG_EVAL:
                 if os.path.exists(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "offline_actions_dfs_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_generator_iteration" + str(0) + self.suffix + str(policy["name"]) + str(self.evaluation_type_suffix))) and not self.get_dfs_policies:
@@ -255,28 +277,36 @@ class SimBankEvaluator():
             #             prep_seq_offline_full_dict[policy] = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "prep_seq_offline_full_dict_eval_" + str(self.DATASET_PARAMS["intervention_name"]) +  str(delta) + "_" + policy + "_generator_iteration" + str(0) + str(self.evaluation_type_suffix)))
             #             continue
 
-            # if policy == "bank":
-            #     continue
+            
+
+            
             prep_agg_offline_full_dict[policy] = []
             prep_seq_offline_full_dict[policy] = []
-            for iteration in range(self.EVALUATOR_PARAMS["num_iterations"]):
-                if iteration >= len(offline_full_dfs[policy]):
-                    continue
-                offline_full_df = offline_full_dfs[policy][iteration]
+            # for iteration in range(self.EVALUATOR_PARAMS["num_iterations"]):
+            #     if iteration >= len(offline_full_dfs[policy]):
+            #         continue
+            #     offline_full_df = offline_full_dfs[policy][iteration]
 
-                if "RealCause" in self.generator_classes.keys():
-                    prep_agg_offline_full = self.case_preps["RealCause"].preprocess_eval_aggregated(offline_full_df, self.generator_classes["RealCause"].prep_utils)
-                    prep_agg_offline_full_dict[policy].append(prep_agg_offline_full)
-                if "ProCause" in self.generator_classes.keys():
-                    prep_seq_offline_full = self.case_preps["ProCause"].preprocess_eval_sequential(offline_full_df, self.generator_classes["ProCause"].prep_utils) 
-                    prep_seq_offline_full_dict[policy].append(prep_seq_offline_full)
+            #     if "RealCause" in self.generator_classes.keys():
+            #         prep_agg_offline_full = self.case_preps["RealCause"].preprocess_eval_aggregated(offline_full_df, self.generator_classes["RealCause"].prep_utils)
+            #         prep_agg_offline_full_dict[policy].append(prep_agg_offline_full)
+            #     if "ProCause" in self.generator_classes.keys():
+            #         prep_seq_offline_full = self.case_preps["ProCause"].preprocess_eval_sequential(offline_full_df, self.generator_classes["ProCause"].prep_utils) 
+            #         prep_seq_offline_full_dict[policy].append(prep_seq_offline_full)
             
-            # save
-            if self.BIG_EVAL:
-                if "RealCause" in self.generator_classes.keys():
-                    save_data(prep_agg_offline_full_dict[policy], os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "prep_agg_offline_full_dict_eval_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_" + policy + "_generator_iteration" + str(0) + str(self.evaluation_type_suffix)))
-                if "ProCause" in self.generator_classes.keys():
-                    save_data(prep_seq_offline_full_dict[policy], os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "prep_seq_offline_full_dict_eval_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_" + policy + "_generator_iteration" + str(0) + str(self.evaluation_type_suffix)))
+            # # save
+            # if self.BIG_EVAL:
+            #     if "RealCause" in self.generator_classes.keys():
+            #         save_data(prep_agg_offline_full_dict[policy], os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "prep_agg_offline_full_dict_eval_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_" + policy + "_generator_iteration" + str(0) + str(self.evaluation_type_suffix)))
+            #     if "ProCause" in self.generator_classes.keys():
+            #         save_data(prep_seq_offline_full_dict[policy], os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "prep_seq_offline_full_dict_eval_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_" + policy + "_generator_iteration" + str(0) + str(self.evaluation_type_suffix)))
+
+            # TO DELETE: load
+            if "RealCause" in self.generator_classes.keys():
+                prep_agg_offline_full_dict[policy] = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "prep_agg_offline_full_dict_eval_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_" + policy + "_generator_iteration" + str(0) + str(self.evaluation_type_suffix)))
+            if "ProCause" in self.generator_classes.keys():
+                prep_seq_offline_full_dict[policy] = load_data(os.path.join(os.getcwd(), RESULTS_FOLDER, "SimBank", "prep_seq_offline_full_dict_eval_" + str(self.DATASET_PARAMS["intervention_name"]) + str(delta) + "_" + policy + "_generator_iteration" + str(0) + str(self.evaluation_type_suffix)))
+
 
         return prep_agg_offline_full_dict, prep_seq_offline_full_dict
     
@@ -433,6 +463,17 @@ class SimBankEvaluator():
                             policy_actions_df = pd.concat([policy_actions_df, action_df], axis=0, ignore_index=True)
                             policy_online_df = pd.concat([policy_online_df, prefix_to_estimate], axis=0, ignore_index=True)
 
+                    elif self.DATASET_PARAMS["intervention_info"]["name"] == ["set_ir_3_levels"]:
+                        # prefix is up to calculate_offer (inclusive)
+                        if "calculate_offer" in full_case["activity"].values:
+                            index_calculate_offer = full_case[full_case["activity"] == "calculate_offer"].index[0]
+                            prefix_to_estimate = full_case[:index_calculate_offer + 1]
+
+                            action_df = pd.DataFrame({"case_nr": case_nr, "action": best_action}, index=[0])
+                            policy_actions_df = pd.concat([policy_actions_df, action_df], axis=0, ignore_index=True)
+                            policy_online_df = pd.concat([policy_online_df, prefix_to_estimate], axis=0, ignore_index=True)
+                            # print("Prefix to estimate", prefix_to_estimate, "\n")
+
                 # if self.print_cases:
                 #     print("Full case", full_case, "\n")
             
@@ -574,6 +615,10 @@ class SimBankEvaluator():
                 y_ = y_total_stacked[actions, torch.arange(y_total_stacked.shape[1])].unsqueeze(1)
             # y_ = y_total_[action_df["action"].values]
             y_pred = self.generator_classes["ProCause"].prep_utils["scaler_dict_train"]["outcome"].inverse_transform(y_.reshape(-1, 1))
+            # check if there are any huge values in y_pred (like 1e+20 or -1e+20)
+            if (y_pred > 1e+20).any() or (y_pred < -1e+20).any():
+                # raise an error
+                raise ValueError("Huge values in y_pred: ", y_pred)
             outcome_df["outcome"] = y_pred
             total_outcome_df = pd.concat([total_outcome_df, outcome_df], axis=0, ignore_index=True)
         return total_outcome_df
@@ -631,5 +676,14 @@ class SimBankEvaluator():
             true_outcomes = true_outcome_df[true_outcome_df["case_nr"] == case_nr]
             estimated_outcomes = estimated_outcome_df[estimated_outcome_df["case_nr"] == case_nr]
             wssd = stats.wasserstein_distance(true_outcomes["outcome"], estimated_outcomes["outcome"])
+            if np.isnan(wssd):
+                print('NAN')
+                print("True outcomes for case nr ", case_nr, ": ", true_outcomes["outcome"].values)
+                print("Estimated outcomes for case nr ", case_nr, ": ", estimated_outcomes["outcome"].values)
+            # also print if it is super large
+            # if wssd > 20000:
+            #     print('WSSD is super large: ', wssd)
+            #     print('True outcomes for case nr ', case_nr, ': ', true_outcomes["outcome"].values)
+            #     print('Estimated outcomes for case nr ', case_nr, ': ', estimated_outcomes["outcome"].values)
             wssd_list.append(wssd)
         return sum(wssd_list) / len(wssd_list)

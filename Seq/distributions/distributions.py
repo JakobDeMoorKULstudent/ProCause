@@ -299,13 +299,29 @@ class SigmoidFlow(BaseDistribution):
             return logdet
 
     def sample(self, params):
+        # check if params has nan values
+        if torch.isnan(params).any():
+            print("NaN in params")
+            # print(params)
         n, params_dim = params.shape
         p = int(params_dim / (self.ndim * 3))
         slc = torch.chunk(params, self.ndim*3, 1)[0]
+        # check if slc has nan values
+        if torch.isnan(slc).any():
+            print("NaN in slc")
+            # print(slc)
         y = torch.randn_like(slc) if self.logit_end else torch.rand_like(slc)
+        # check if y has nan values
+        if torch.isnan(y).any():
+            print("NaN in y")
+            # print(y)
         x = sigmoid_flow_inverse(
             y, ndim=self.ndim, params=params.view(n, p, self.ndim*3),
             logit_end=self.logit_end, x=None, tol=1e-2, max_iter=100, lr=0.1)
+        # check if there are NaN values in x
+        if torch.isnan(x).any():
+            print("NaN in x after sampling")
+            # print(x)
         return x.data.cpu().numpy()
 
     @property

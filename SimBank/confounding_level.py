@@ -26,11 +26,18 @@ def set_delta(data, data_RCT, delta):
     data_new_RCT["case_nr"] = data_new_RCT["case_nr"] - min_case_nr_RCT + max_case_nr + 1
     #Add RCT data to normal data
     data_combined = pd.concat([data_new, data_new_RCT], ignore_index=True)
-    # #Shuffle data
+
+    # Shuffle the case order
+    
     unique_cases_combined = data_combined['case_nr'].unique()
     np.random.shuffle(unique_cases_combined)
-    data_combined = data_combined[data_combined['case_nr'].isin(unique_cases_combined)]
+    grouped = data_combined.groupby('case_nr', sort=False)
+    data_combined = pd.concat([grouped.get_group(case) for case in unique_cases_combined], ignore_index=True)
 
-    case_mapping = {case: idx for idx, case in enumerate(sorted(unique_cases_combined))}
+    # unique_cases_combined = data_combined['case_nr'].unique()
+    # np.random.shuffle(unique_cases_combined)
+    # data_combined = data_combined[data_combined['case_nr'].isin(unique_cases_combined)]
+
+    case_mapping = {case: idx for idx, case in enumerate((unique_cases_combined))}
     data_combined['case_nr'] = data_combined['case_nr'].map(case_mapping)
     return data_combined

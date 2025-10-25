@@ -45,6 +45,11 @@ def sigmoid_flow_integral(x, ndim=4, params=None):
     assert params is not None, 'parameters not provided'
     assert params.size(2) == ndim * 3, 'params shape[2] does not match ndim * 3'
 
+    # check if x has NaN values
+    if torch.isnan(x).any():
+        print("NaN in x")
+        # print(x)
+
     a = act_a(params[:, :, 0 * ndim: 1 * ndim])
     b = act_b(params[:, :, 1 * ndim: 2 * ndim])
     w = act_w(params[:, :, 2 * ndim: 3 * ndim])
@@ -54,8 +59,20 @@ def sigmoid_flow_integral(x, ndim=4, params=None):
     # let's check the summation step by step
     # a sometimes becomes zero, as a is the output of softplus, which can be zero (for large negative values in params)
     epsilon = 1e-12
-    a = torch.where(a == 0, a + epsilon, a)
+    # check if x has NaN values
+    if torch.isnan(x).any():
+        print("NaN in x")
+        # print(x)
+    # a = torch.where(a == 0, a + epsilon, a)
+    # a = a + epsilon  # to avoid division by zero
+    epsilon = 1e-12
+    threshold = 1e-38
+    a = torch.where(a.abs() < threshold, a + epsilon, a)
     x_pre = torch.sum(w * sfp / a, dim=2)
+    # check if x_pre has NaN values
+    if torch.isnan(x_pre).any():
+        print("NaN in x_pre")
+        # print(x_pre)
     return x_pre
 
 
@@ -66,9 +83,18 @@ def sigmoid_flow_inverse(y, ndim=4, params=None, logit_end=True, x=None, tol=1e-
         x = y.clone().detach().requires_grad_(True)
     error_old = (sigmoid_flow(x, 0, ndim=ndim, params=params, logit_end=False)[0] - y).abs().max().item()
 
+    # check if x has NaN values
+    if torch.isnan(x).any():
+        print("NaN in x")
+        # print(x)
+
     def closure():
         """ Solves x such that f(x) - y = 0 <=> Solves x such that argmin_x F(x) - <x,y> """
         loss = sigmoid_flow_integral(x, ndim=ndim, params=params).sum() - torch.sum(x * y)
+        # check whether loss is NaN
+        if torch.isnan(loss).any() or torch.isinf(loss).any():
+            print("NaN in loss")
+            # print(loss)
         x.grad = torch.autograd.grad(loss, x)[0].detach()
         return loss
 

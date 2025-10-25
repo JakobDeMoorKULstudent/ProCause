@@ -87,7 +87,7 @@ if DATASET == "SimBank":
     dataset_params_simbank = load_data(os.path.join(os.getcwd(), DATA_FOLDER, DATASET, "loan_log_" + str(DATASET_PARAMS["intervention_name"]) + "_" + str(DATASET_PARAMS["train_size"]) + "_dataset_params_" + PATH_SUFFIX_DATA))
     DATASET_PARAMS.update(dataset_params_simbank)
 
-    if args.intervention_name:
+    if args.biased:
         DATASET_PARAMS["data_path_normal"] = "loan_log_" + str(DATASET_PARAMS["intervention_name"]) + "_" + str(DATASET_PARAMS["train_size"]) + "_train_normal_" + PATH_SUFFIX_DATA
         BIAS_PATH = "_biased"
         # LOAD DATA
@@ -136,7 +136,6 @@ if DATASET == "SimBank":
     MODEL_PARAMS["dim_sigmoidflow"] = 2
     MODEL_PARAMS["patience"] = 7500
     MODEL_PARAMS["grad_norm"] = 1.0
-    MODEL_PARAMS["outcome_distribution"] = ["normal", "atoms"]
     MODEL_PARAMS["t_already_trained"] = False
     MODEL_PARAMS["loss_type"] = "separate"
     MODEL_PARAMS["causal_type"] = args.learners[0]
@@ -170,6 +169,8 @@ if DATASET == "SimBank":
                 # for the causal_type grab the first part of the policy name, and for the model_type grab the second part of the policy name
                 causal_type = policy.split("_")[0]
                 model_type = policy.split("_")[1]
+                if model_type == "Vanilla":
+                    model_type = "Vanilla_NN"
                 EVALUATOR_PARAMS["policies"].append({"name": policy, "causal_type": causal_type, "model_type": model_type})
     
     if not args.big_eval:
@@ -213,7 +214,6 @@ elif DATASET == "bpic2012":
     MODEL_PARAMS["dim_sigmoidflow"] = 2
     MODEL_PARAMS["patience"] = 7500
     MODEL_PARAMS["grad_norm"] = 1.0
-    MODEL_PARAMS["outcome_distribution"] = ["normal", "atoms"]
     MODEL_PARAMS["t_already_trained"] = False
     MODEL_PARAMS["loss_type"] = "separate"
     MODEL_PARAMS["causal_type"] = args.learners[0]
@@ -250,7 +250,6 @@ elif DATASET == "bpic2017":
     MODEL_PARAMS["dim_sigmoidflow"] = 2
     MODEL_PARAMS["patience"] = 7500
     MODEL_PARAMS["grad_norm"] = 1.0
-    MODEL_PARAMS["outcome_distribution"] = ["normal", "atoms"]
     MODEL_PARAMS["t_already_trained"] = False
     MODEL_PARAMS["loss_type"] = "separate"
     MODEL_PARAMS["causal_type"] = args.learners[0]
