@@ -17,13 +17,11 @@ ProCause/
     |_ utils.py                         # utils only for the evaluator
 |_ NonSeq/                          # Evaluator using Non-Sequential Models
 |_ res/                             # Results of the experiments
-    |_ res_main.ipynb                   # Calculate the Ensemble outputs, collect the results
+    |_ res_main.ipynb                   # Calculate the Ensemble outputs, collect the results (including figures)
     |_ res_utils.py                     # Utils for Calculating the Ensemble outputs and collecting the results
     |_ SimBank                          # Results for the SimBank simulation
     |_ bpic2012                         # Results for the BPIC12 dataset
     |_ bpic2017                         # Results for the BPIC17 dataset
-    |_ all_rankings                     # All resulting rankings of the evaluated PresPM methods, originating from the true ranking, and from each learner/model setup (for each iteration)
-    |_ figures                          # Figures of the results
 |_ scripts/
     |_ CausalEstimators_run.py          # Train the PresPM methods (based on causal estimators) to evaluate with ProCause(/RealCause)
     |_ NonSeq_run.py                    # Tune, Train & Evaluate the PresPM methods using non-sequential models
