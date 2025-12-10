@@ -43,7 +43,7 @@ The ```requirements_all_code.txt``` file provides the necessary packages for Pro
 All code was written for ```python 3.11.5```.
 
 ## Experiments of the paper
-Download the SimBank data for the experiments from [Google Drive/data](https://drive.google.com/drive/folders/1ebzSVZku52xA1utllNVdkYcETxPW93c4?usp=sharing). 
+Download the SimBank data for the experiments from [Google Drive](https://drive.google.com/file/d/12VFUwNaMXG1CnS7_CdNgkrrepgVN5OmS/view?usp=sharing). 
 
 BPIC12 & 17 can be downloaded from https://data.4tu.nl/articles/dataset/BPI_Challenge_2012/12689204 and https://data.4tu.nl/articles/dataset/BPI_Challenge_2017/12696884 respectively. Afterwards, these datasets should be cleaned using ProCause/src/utils/preprocessor/bpic_cleaning.ipynb.
 
@@ -55,4 +55,4 @@ Now, the results from the paper can be reproduced by setting the ```path``` vari
 python scripts/Seq_run.py --config config/configs_methods/config_run_all.json --dataset SimBank --intervention_name time_contact_HQ --learners TarNet S-Learner T-Learner --delta 0.95 --policies all
 ```
 
-Download the results of the experiments from [Google Drive/res](https://drive.google.com/drive/folders/1jh0M3iGL_zMG9RCPYZEXcyGICHPqbOv4?usp=sharing). 
+Download the results of the experiments from [Google Drive](https://drive.google.com/file/d/1qdB8ToGxZfY7NeJ6JMX1ymbhY5NmAHtL/view?usp=sharing). 
