@@ -42,7 +42,7 @@ parser.add_argument('--already_preprocessed', type=lambda x: x.lower() == 'true'
 parser.add_argument('--iterations_to_skip', nargs='+', type=int, default=config_args.get('iterations_to_skip', []), help='Iterations to skip')
 parser.add_argument('--biased', type=lambda x: x.lower() == 'true', default=config_args.get('biased', True), help='Biased (True or False)')
 parser.add_argument('--tuning', type=lambda x: x.lower() == 'true', default=config_args.get('tuning', False), help='Tuning (True or False)')
-parser.add_argument('--num_iterations', type=int, default=config_args.get('num_iterations', 10), help='Num iterations')
+parser.add_argument('--num_iterations', type=int, default=config_args.get('num_iterations', 5), help='Num iterations')
 parser.add_argument('--delta', type=float, default=config_args.get('delta', 0.95), help='Delta')
 parser.add_argument('--t_already_tuned', type=lambda x: x.lower() == 'true', default=config_args.get('t_already_tuned', False), help='T already tuned (True or False)')
 parser.add_argument('--y_already_tuned', type=lambda x: x.lower() == 'true', default=config_args.get('y_already_tuned', False), help='Y already tuned (True or False)')
