@@ -54,5 +54,3 @@ Now, the results from the paper can be reproduced by setting the ```path``` vari
 ```
 python scripts/Seq_run.py --config config/configs_methods/config_run_all.json --dataset SimBank --intervention_name time_contact_HQ --learners TarNet S-Learner T-Learner --delta 0.95 --policies all
 ```
-
-Download the results of the experiments from [Google Drive](https://drive.google.com/file/d/1qdB8ToGxZfY7NeJ6JMX1ymbhY5NmAHtL/view?usp=sharing). 
